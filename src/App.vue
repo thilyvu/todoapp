@@ -1,0 +1,228 @@
+<template>
+	<div className="todolist">
+		<headers></headers>
+		<todolist :todo="todos" @deleteItemFromList="deleteItem"  
+					@check="checkItem" @update="updateOldItem"
+		></todolist>
+		<div v-if="showupdate">
+			<updateitem @Update2="updateNew" :update="UD" ></updateitem>
+		</div>
+		
+			<addtask @addItem="addNewItem"></addtask>
+
+	</div>
+</template>
+<style scoped >
+.todolist{
+	margin-right: 30%;
+	margin-left: 30%;
+	margin:4rem auto;
+	padding:2rem 3rem 3rem;
+	max-width:500px;
+	background:#FF6666;
+	color:#FFF;
+	box-shadow:-20px -20px 0px 0px rgba(100,100,100,.1);
+}
+</style>
+<script>
+import addtask from './components/addtask.vue';
+import headers from "./components/headers";
+import todolist from "./components/todolist";
+import updateitem from './components/updateitem';
+import axios from 'axios'
+
+export default {
+	setup() {
+		
+	},
+	async mounted(){
+		try {
+			var result= await axios({
+				method:"POST",
+				url: 'https://demooooo.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				data:{
+			
+					query: `
+						query PostsForAuthor {
+								todos {
+									done
+									id
+									label
+								}
+							}
+				`
+			}
+			});
+		console.log(result.data.data.todos);
+		this.todos=result.data.data.todos;
+		} catch (error) {
+			console.error(error);
+		}
+	},
+	
+	components:{
+		headers,todolist,addtask,updateitem,	
+	},
+
+	data(){
+
+		return{
+			todos:[],
+			UD:{
+				id:1000,label: "Learn VueJs", done: true
+			},
+			showupdate:false,			
+		}
+	},
+
+	methods:{
+		async deleteItem(item){
+			this.todos =this.todos.filter((todo)=>todo.id!==item.id);
+			try {
+			var result= await axios({
+				method:"POST",
+				url: 'https://demooooo.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				data:{
+					query: `
+					mutation MyMutation($_eq: Int) {
+					delete_todos(where: {id: {_eq: $_eq}}) {
+						returning {
+						done
+						id
+						}
+					}
+					}
+
+				`,
+				variables:{					
+					"_eq": item.id
+				}
+				
+			}
+			});
+			console.log(result.data.data.todos);
+			//this.todos=result.data.data.todos;
+			} catch (error) {
+				console.error(error);
+			}
+
+		},
+		async checkItem(item){
+			this.todos=this.todos.map((todo)=>todo.id===item.id? {...todo,done:!todo.done} :todo);
+				try {
+			var result= await axios({
+				method:"POST",
+				url: 'https://demooooo.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				data:{
+					query: `
+					mutation MyMutation($_eq: Int, $_set: todos_set_input ) {
+						update_todos(where: {id: {_eq: $_eq}}, _set: $_set) {
+							returning {
+							done
+							}
+						}
+						}
+				`,
+				variables:{					
+					"_eq": item.id,
+					"_set": {
+						"done": !item.done
+						}	
+						}
+				
+			}
+			});
+			console.log(result.data.data.todos);
+			//this.todos=result.data.data.todos;
+			} catch (error) {
+				console.error(error);
+			}
+
+		},
+		updateOldItem(item){
+			this.UD.id=item.id;
+			this.UD.label=item.label;
+			this.UD.done=item.done;
+			this.showupdate=!this.showupdate;
+			console.log(this.UD.id,this.UD.done,this.UD.label);
+		},
+		async addNewItem(item){
+			this.todos.push(item);
+			try {
+			var result= await axios({
+				method:"POST",
+				url: 'https://demooooo.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				data:{
+					query: `
+					 mutation MyMutation($objects: [todos_insert_input!]!) {
+						insert_todos(objects: $objects) {
+							returning {
+							done
+							id
+							label
+							}
+						}
+						}
+				`,
+				variables:{					
+					"objects": {
+						"done": item.done,
+						"id": item.id,
+						"label": item.label
+					}	
+				}
+				
+			}
+			});
+			console.log(result.data.data.todos);
+			//this.todos=result.data.data.todos;
+			} catch (error) {
+				console.error(error);
+			}
+		},
+		async updateNew(item){
+			this.todos=this.todos.map((todo)=>todo.id===this.UD.id?{todo,label:item.label}:todo);
+			console.log(item);
+			console.log(this.UD);
+			try {
+				var result= await axios({
+					method:"POST",
+					url: 'https://demooooo.hasura.app/v1/graphql',
+						headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+					data:{
+						query: `
+						mutation MyMutation($_eq: Int , $_set: todos_set_input = {}) {
+							update_todos(where: {id: {_eq: $_eq}}, _set: $_set) {
+								returning {
+								done
+								id
+								label
+								}
+							}
+							}
+
+					`,
+					variables:{					
+						"_eq": this.UD.id,
+						"_set": {
+							"done": item.done,
+							"label": item.label
+						}
+					}
+				}
+				});
+				console.log(result.data.data.todos);
+				//this.todos=result.data.data.todos;
+				} catch (error) {
+					console.error(error);
+				} 
+
+			this.showupdate=!this.showupdate;
+		} 	
+	}
+}
+</script>
