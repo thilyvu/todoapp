@@ -1,7 +1,10 @@
 <template>
-	<div className="todolist">
+	<div className="todolist" >
 		<headers></headers>
-		<todolist :todo="todos" @deleteItemFromList="deleteItem"  
+		<todolist :todo="todos" @deleteItemFromList="deleteItem" position="1"
+					@check="checkItem" @update="updateOldItem"
+		></todolist>
+		<todolist :todo="todosFalse" @deleteItemFromList="deleteItem" position="2"
 					@check="checkItem" @update="updateOldItem"
 		></todolist>
 		<div v-if="showupdate">
@@ -44,18 +47,42 @@ export default {
 				data:{
 			
 					query: `
-						query PostsForAuthor {
-								todos {
-									done
-									id
-									label
-								}
+						query MyQuery {
+							todos(where: {done: {_eq: true}}) {
+								done
+								id
+								label
 							}
+							}
+
 				`
 			}
 			});
 		console.log(result.data.data.todos);
 		this.todos=result.data.data.todos;
+		} catch (error) {
+			console.error(error);
+		}
+		try {
+			var result1= await axios({
+				method:"POST",
+				url: 'https://demooooo.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				data:{
+			
+					query: `
+						query MyQuery {
+						todos(where: {done: {_eq: false}}) {
+							done
+							id
+							label
+						}
+						}
+				`
+			}
+			});
+		console.log(result1.data.data.todos);
+		this.todosFalse=result1.data.data.todos;
 		} catch (error) {
 			console.error(error);
 		}
@@ -66,9 +93,10 @@ export default {
 	},
 
 	data(){
-
+		
 		return{
 			todos:[],
+			todosFalse:[],
 			UD:{
 				id:1000,label: "Learn VueJs", done: true
 			},
@@ -79,6 +107,7 @@ export default {
 	methods:{
 		async deleteItem(item){
 			this.todos =this.todos.filter((todo)=>todo.id!==item.id);
+			this.todosFalse =this.todosFalse.filter((todoFalse)=>todoFalse.id!==item.id);
 			try {
 			var result= await axios({
 				method:"POST",
@@ -97,7 +126,7 @@ export default {
 
 				`,
 				variables:{					
-					"_eq": item.id
+					"_eq":item.id
 				}
 				
 			}
@@ -110,7 +139,22 @@ export default {
 
 		},
 		async checkItem(item){
-			this.todos=this.todos.map((todo)=>todo.id===item.id? {...todo,done:!todo.done} :todo);
+			console.log(item.done)
+
+			if(item.done==true)
+			{
+
+				this.todosFalse.push(item);
+				this.todosFalse=this.todosFalse.map((todo)=>todo.id===item.id? {...todo,done:!todo.done} :todo);	
+				this.todos =this.todos.filter((todo)=>todo.id!==item.id);
+				
+			}
+			else {
+		
+				this.todos.push(item);
+				this.todos=this.todos.map((todo)=>todo.id===item.id? {...todo,done:!todo.done} :todo);
+				this.todosFalse =this.todosFalse.filter((todoFalse)=>todoFalse.id!==item.id);
+			}
 				try {
 			var result= await axios({
 				method:"POST",
@@ -147,10 +191,17 @@ export default {
 			this.UD.label=item.label;
 			this.UD.done=item.done;
 			this.showupdate=!this.showupdate;
-			console.log(this.UD.id,this.UD.done,this.UD.label);
+			//console.log(this.UD.id,this.UD.done,this.UD.label);
 		},
 		async addNewItem(item){
-			this.todos.push(item);
+			console.log(item.done);
+			if(item.done==true)
+			{
+				this.todos.push(item);
+			}
+			else {
+				this.todosFalse.push(item);
+			}
 			try {
 			var result= await axios({
 				method:"POST",
@@ -185,9 +236,14 @@ export default {
 			}
 		},
 		async updateNew(item){
-			this.todos=this.todos.map((todo)=>todo.id===this.UD.id?{todo,label:item.label}:todo);
-			console.log(item);
-			console.log(this.UD);
+			console.log(item.done);
+			if(item.done== true)
+			{
+				this.todos=this.todos.map((todo)=>todo.id===this.UD.id?{todo,label:item.label}:todo);
+			}
+			else{
+				this.todosFalse=this.todosFalse.map((todoFalse)=>todoFalse.id===this.UD.id?{todoFalse,label:item.label}:todoFalse);	
+			}
 			try {
 				var result= await axios({
 					method:"POST",

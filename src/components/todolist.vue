@@ -1,7 +1,7 @@
 <template>
-<div>
-     <transition-group name="todolist" tag="ul">
-      <li v-for="item in todo" v-bind:class="item.done ? 'done' : ''" v-bind:key="item.id">
+<div @drop="OnDrop($event,position)" @dragenter.prevent @dragover.prevent>
+     <transition-group name="todolist" tag="ul" >
+      <li v-for="item in todo" v-bind:class="item.done ? 'done' : ''" v-bind:key="item.id" draggable="true" @dragstart="startDrag($event,item)" @dragenter.prevent @dragover.prevent>
         <span class="label">{{item.label}}</span>
         <div class="actions">
           <button class="btn-picto" type="button" v-on:click="$emit('update',item)" >
@@ -9,9 +9,9 @@
           </button>
           <button class="btn-picto" type="button" v-on:click="$emit('Check',item)" aria-label="Edit" title="Edit">
                     <div v-if="item.done">
-                     <i class="far fa-square" ></i>
+                    <i class="far fa-square" ></i>
                     </div>
-                    <div v-else>
+                    <div v-if="!item.done">
                       <i class="far fa-check-square" ></i>
                     </div>
           </button>
@@ -85,13 +85,35 @@ li {
 </style>
 <script>
   export default{
+	
     props:{
-      todo:Object
+		todo:Object,
+		position: String 
     },
 
-    methods:{
-     
-      
+    methods:{                                                                                                                                                                                                                                                                                              
+	startDrag(event,item){
+		event.dataTransfer.dropEffect='move';
+		event.dataTransfer.effectAllowed='move';
+		event.dataTransfer.setData('itemID',item.id);
+		localStorage.setItem('DraggedItem', JSON.stringify(item))
+		},  
+		// Chuyển đối tượng thành chuỗi JSON và lưu vào LocalStorage
+
+	OnDrop(event,item){
+		// const itemID= event.dataTransfer.getData('itemID');
+		console.log(item);
+		var localstorage_item = JSON.parse(localStorage.getItem('DraggedItem'));
+		console.log(localstorage_item.done);
+		// itemID.done=!itemID.done;
+
+		if(item=="1"&& localstorage_item.done==false){
+			this.$emit('Check',localstorage_item)
+		}
+		if( item =="2" && localstorage_item.done==true){
+			this.$emit('Check',localstorage_item)
+		}
+	}
     }
   }
 </script>
