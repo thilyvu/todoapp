@@ -44,6 +44,5 @@
   "display": "standalone",
   "theme_color": "#3367D6",
   "splash_pages": null,
-  "orientation": "portrait",
-  "prefer_related_applications": true
+  "orientation": "portrait"
 }
