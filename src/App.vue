@@ -42,8 +42,8 @@ export default {
 		try {
 			var result= await axios({
 				method:"POST",
-				url: 'https://demooooo.hasura.app/v1/graphql',
-					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				url: 'https://todoapp1111.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'U6vFWYbKmDf6oz3VxCUAMiA5gytVn3nvr02fN5ykmSD1LkvZK11gIMpwdEdIe2eh'},
 				data:{
 			
 					query: `
@@ -66,8 +66,8 @@ export default {
 		try {
 			var result1= await axios({
 				method:"POST",
-				url: 'https://demooooo.hasura.app/v1/graphql',
-					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				url: 'https://todoapp1111.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'U6vFWYbKmDf6oz3VxCUAMiA5gytVn3nvr02fN5ykmSD1LkvZK11gIMpwdEdIe2eh'},
 				data:{
 			
 					query: `
@@ -111,11 +111,11 @@ export default {
 			try {
 			var result= await axios({
 				method:"POST",
-				url: 'https://demooooo.hasura.app/v1/graphql',
-					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				url: 'https://todoapp1111.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'U6vFWYbKmDf6oz3VxCUAMiA5gytVn3nvr02fN5ykmSD1LkvZK11gIMpwdEdIe2eh'},
 				data:{
 					query: `
-					mutation MyMutation($_eq: Int) {
+					mutation MyMutation($_eq: uuid) {
 					delete_todos(where: {id: {_eq: $_eq}}) {
 						returning {
 						done
@@ -158,8 +158,8 @@ export default {
 				try {
 			var result= await axios({
 				method:"POST",
-				url: 'https://demooooo.hasura.app/v1/graphql',
-					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				url: 'https://todoapp1111.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'U6vFWYbKmDf6oz3VxCUAMiA5gytVn3nvr02fN5ykmSD1LkvZK11gIMpwdEdIe2eh'},
 				data:{
 					query: `
 					mutation MyMutation($_eq: Int, $_set: todos_set_input ) {
@@ -205,8 +205,8 @@ export default {
 			try {
 			var result= await axios({
 				method:"POST",
-				url: 'https://demooooo.hasura.app/v1/graphql',
-					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+				url: 'https://todoapp1111.hasura.app/v1/graphql',
+					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'U6vFWYbKmDf6oz3VxCUAMiA5gytVn3nvr02fN5ykmSD1LkvZK11gIMpwdEdIe2eh'},
 				data:{
 					query: `
 					 mutation MyMutation($objects: [todos_insert_input!]!) {
@@ -222,7 +222,6 @@ export default {
 				variables:{					
 					"objects": {
 						"done": item.done,
-						"id": item.id,
 						"label": item.label
 					}	
 				}
@@ -247,8 +246,8 @@ export default {
 			try {
 				var result= await axios({
 					method:"POST",
-					url: 'https://demooooo.hasura.app/v1/graphql',
-						headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'KnuTN2VT5la4Ob5Se3hTEGMauGzotiG7h4kFPii5q5TKXuZCWdZqXEcEjpi8W29q'},
+					url: 'https://todoapp1111.hasura.app/v1/graphql',
+						headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'U6vFWYbKmDf6oz3VxCUAMiA5gytVn3nvr02fN5ykmSD1LkvZK11gIMpwdEdIe2eh'},
 					data:{
 						query: `
 						mutation MyMutation($_eq: Int , $_set: todos_set_input = {}) {

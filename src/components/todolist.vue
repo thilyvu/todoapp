@@ -104,7 +104,6 @@ li {
 		// const itemID= event.dataTransfer.getData('itemID');
 		console.log(item);
 		var localstorage_item = JSON.parse(localStorage.getItem('DraggedItem'));
-		console.log(localstorage_item.done);
 		// itemID.done=!itemID.done;
 
 		if(item=="1"&& localstorage_item.done==false){
