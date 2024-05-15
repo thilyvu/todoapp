@@ -1,5 +1,8 @@
 <template>
-	<div className="todolist" >
+	<div>
+		<div v-if="loading">
+        </div>
+	<div v-else className="todolist">
 		<headers></headers>
 		<todolist :todo="todos" @deleteItemFromList="deleteItem" position="1"
 					@check="checkItem" @update="updateOldItem"
@@ -12,7 +15,7 @@
 		</div>
 		
 			<addtask @addItem="addNewItem"></addtask>
-
+	</div>
 	</div>
 </template>
 <style scoped >
@@ -62,6 +65,7 @@ export default {
 		this.todos=result.data.data.todos;
 		} catch (error) {
 			console.error(error);
+			this.loading = false; 
 		}
 		try {
 			var result1= await axios({
@@ -85,7 +89,9 @@ export default {
 		this.todosFalse=result1.data.data.todos;
 		} catch (error) {
 			console.error(error);
+			this.loading = false; 
 		}
+		this.loading = false; 
 	},
 	
 	components:{
@@ -100,7 +106,8 @@ export default {
 			UD:{
 				id:1000,label: "Learn VueJs", done: true
 			},
-			showupdate:false,			
+			showupdate:false,		
+			loading: true, 	
 		}
 	},
 
@@ -162,7 +169,7 @@ export default {
 					headers: { 'Content-Type': 'application/json','x-hasura-admin-secret':'U6vFWYbKmDf6oz3VxCUAMiA5gytVn3nvr02fN5ykmSD1LkvZK11gIMpwdEdIe2eh'},
 				data:{
 					query: `
-					mutation MyMutation($_eq: Int, $_set: todos_set_input ) {
+					mutation MyMutation($_eq: uuid, $_set: todos_set_input ) {
 						update_todos(where: {id: {_eq: $_eq}}, _set: $_set) {
 							returning {
 							done
